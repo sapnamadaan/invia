@@ -21,20 +21,8 @@ public class MainPage extends BasePage {
 	}
 
 	public HotelPage gotoHotelPage() {
-		//if (WARNING_OK_BUTTON.isDisplayed()) {
-			//WARNING_OK_BUTTON.click();
-		//}
 		HotelMenu.click();
 		return PageFactory.initElements(driver, HotelPage.class);
-
-	}
-	
-	public HotelPage2 gotoHotelPage2() {
-		//if (WARNING_OK_BUTTON.isDisplayed()) {
-			//WARNING_OK_BUTTON.click();
-		//}
-		HotelMenu.click();
-		return PageFactory.initElements(driver, HotelPage2.class);
 
 	}
 

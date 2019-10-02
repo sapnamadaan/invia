@@ -5,7 +5,7 @@
     <classes>
       <class name="de.urlaub.pom.testcases.ClientTest">
         <methods>
-          <include name="testAgain"/>
+          <include name="testSearchHotel"/>
         </methods>
       </class> <!-- de.urlaub.pom.testcases.ClientTest -->
     </classes>

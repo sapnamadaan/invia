@@ -1,16 +1,9 @@
 package de.urlaub.pom.pages;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.Duration;
 import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 
-import org.joda.time.DateTime;
-import org.joda.time.Months;
 import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -18,6 +11,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import de.urlaub.pom.base.BasePage;
+import de.urlaub.pom.util.DateSelector;
 import de.urlaub.pom.util.URConstants;
 
 public class HotelPage extends BasePage {
@@ -53,78 +47,41 @@ public class HotelPage extends BasePage {
 
 	public HotelPage(WebDriver driver) {
 		super(driver);
-
 	}
 
-	public void searchHotel(String city, String checkInDate, String checkOutDate) {
+	public void setCity(String city) {
 		HOTEL_SEARCH_STADT_TEXT_INPUT.sendKeys(city);
 		WebDriverWait wait = new WebDriverWait(driver, 20);
-		HOTEL_SEARCH_STADT_TEXT_INPUT.sendKeys(Keys.ARROW_DOWN);
-		HOTEL_SEARCH_STADT_TEXT_INPUT.sendKeys(Keys.ENTER);
-
-		selectCalender(checkInDate, HOTEL_SEARCH_BOOK_TEXT_ENTRY_DATE);
-		selectCalender(checkOutDate, HOTEL_SEARCH_BOOK_TEXT_END_DATE);
-		driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
-		ANGEBOTE_SUCHEN_BUTTON.click();
-		driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
-
-		
-
-		wait.until(ExpectedConditions.visibilityOf(RESULT_FIRST_FRAME));
-
-		FIVE_STAR_RATING.click();
-		PREIS_BUTTON.click();
-		PREIS_BUTTON.click();
-
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ul[@class='aiduac-group 1']//li//li")));
+		List<WebElement> autoSuggest = driver.findElements(By.xpath("//ul[@class='aiduac-group 1']//li//li"));
+		driver.switchTo().activeElement();
+		for (WebElement a : autoSuggest) {
+			if (a.getText().contains(city)) {
+				a.click();
+				break;
+			}
+		}
 	}
 
-	private void selectCalender(String setDateStr, WebElement calender) {
-		calender.click();
-		String currDateStr = driver.findElement(By.className("months-wrapper")).getText();
-		Date setDate;
-		try {
-			setDate = new SimpleDateFormat("dd/MM/yyyy").parse(setDateStr);
-			Date currDate = new SimpleDateFormat("MMMM yyyy", Locale.GERMAN).parse(currDateStr);
-			int monthDiff = Months
-					.monthsBetween(new DateTime(currDate).withDayOfMonth(1), new DateTime(setDate).withDayOfMonth(1))
-					.getMonths();
-			boolean isFuture = true;
-			if (monthDiff < 0) {
-				isFuture = false;
-				monthDiff = -1 * monthDiff;
-			}
-			for (int i = 0; i < monthDiff; i++) {
-				if (isFuture) {
-					driver.findElement(
-							By.xpath("//span[@class='month-button month-button-next icon-arrow-right-bold']")).click();
-				} else {
-					driver.findElement(
-							By.xpath("//span[@class='month-button month-button-prev icon-arrow-left-bold inactive']"))
-							.click();
-				}
+	public void setCheckInDate(String checkInDate) {
+		DateSelector.selectCalender(checkInDate, HOTEL_SEARCH_BOOK_TEXT_ENTRY_DATE, this.driver);
+	}
 
-			}
-			String day = new SimpleDateFormat("dd").format(setDate);
-			List<WebElement> elements = driver.findElements(By.xpath("//td[@class='day day-" + day + "']"));
-			elements.forEach(e -> {
+	public void setCheckOutDate(String checkOutDate) {
+		DateSelector.selectCalender(checkOutDate, HOTEL_SEARCH_BOOK_TEXT_END_DATE, this.driver);
+	}
 
-				try {
-					Date checkDate = new SimpleDateFormat("yyyy-MM-dd").parse(e.getAttribute("data-date"));
-					if (checkDate.compareTo(setDate) == 0) {
-						e.click();
-						if (e.isDisplayed())
-							e.click();
-					}
-				} catch (ParseException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-			});
+	public void clickOnSearchButton() {
+		ANGEBOTE_SUCHEN_BUTTON.click();
+	}
 
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public void setFiveStartRating() {			
+		FIVE_STAR_RATING.click();
+	}
+
+	public void sortPrice() {
+		PREIS_BUTTON.click();
+		
 	}
 
 }
