@@ -20,6 +20,7 @@ public class ClientTest {
 	 */
 	@Test
 	public void testSearchHotel() {
+	
 		WebDriver driver = new FirefoxDriver();
 		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 		LaunchPage launchPage = PageFactory.initElements(driver, LaunchPage.class);
@@ -43,5 +44,7 @@ public class ClientTest {
 		hotelPage.sortPrice();
 	
 	}
+	
+
 
 }
